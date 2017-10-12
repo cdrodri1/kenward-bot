@@ -4,7 +4,7 @@ const client = new Discord.Client();
 const request = require('request');
 const YTDL = require('ytdl-core');
 const personality = require('./personality.js');
-
+const commands = require('./commands.js');
 
 
 const token = 'MzY1MjE4Mzg5MTcxMzcyMDQ1.DLbHsA.7aTq6ntvepp4r1LQlEsrZXUQIrY';
@@ -43,15 +43,15 @@ client.on('message', m =>{
 				break;
 
 			case '!roll':
-				diceRoll(m, input[1]);
+				commands.diceRoll(m, input[1]);
 				break;
 
 			case '!chrissy':
-				postChrissy(m);
+				commands.postChrissy(m);
 				break;
 
 			case '!reddit':
-				postPic(m);
+				commands.postPic(m);
 				break;
 
 			case '!play':
@@ -102,54 +102,58 @@ function play(connection, m){
 	});
 }
 
-function diceRoll(message, num){
-	if(Number(num)){
-		message.reply('Rolling... ' + (Math.floor(Math.random() * (Number(num) - 1)) + 1));
-	} else{
-		message.reply('Rolling... ' + (Math.floor(Math.random() * (6 - 1)) + 1));
-	}
-}
+// function diceRoll(message, num){
+// 	if(Number(num)){
+// 		message.reply('Rolling... ' + (Math.floor(Math.random() * (Number(num) - 1)) + 1));
+// 	} else{
+// 		message.reply('Rolling... ' + (Math.floor(Math.random() * (6 - 1)) + 1));
+// 	}
+// }
 
-function postChrissy(message){
-	let posts = []; 
-	request('https://www.reddit.com/r/ChrissyTeigen/.json', function(err, resp, body){
-		let post = JSON.parse(body);
-		for(let i = 0; i<20; i++){
-			posts.push(post.data.children[i].data.preview.images[0].source.url);
-		}
-		message.channel.send(posts[Math.floor(Math.random()*(20))]);
-	});
-}
+// function postChrissy(message){
+// 	let posts = []; 
+// 	request('https://www.reddit.com/r/ChrissyTeigen/.json', function(err, resp, body){
+// 		let post = JSON.parse(body);
+// 		for(let i = 0; i<20; i++){
+// 			posts.push(post.data.children[i].data.preview.images[0].source.url);
+// 		}
+// 		message.channel.send(posts[Math.floor(Math.random()*(20))]);
+// 	});
+// }
 
-function postPic(message){
-	let m = message.content.split(' ');
-	let sub = m[1]; 
-	let domains = ['i.redd.it', 'i.imgur.com', 'gfycat.com', 'v.redd.it'];
-	let posts = []; 
-	console.log(m);
-	request('https://www.reddit.com/r/'+sub+'/.json?limit=50', function(err, resp, body){
-		if(err){
-			console.log(err);
-			message.channel.send("That's not a subreddit!");
-		} else{
-			let post = JSON.parse(body);
-			for(let i = 0; i<50; i++){
-				console.log(i);
-				if(domains.indexOf(post.data.children[i].data.domain) > -1){
-					posts.push(post.data.children[i]);
-				}
-			}
-			let n = Math.floor(Math.random()*(posts.length)); 
-			console.log(posts.length, n);
-			if(posts.length > 0){
-			message.channel.send('`' + posts[n].data.title + '`');
-			message.channel.send(posts[n].data.url);
-			} else{
-				message.channel.send('No images in /r/'+m[1]+' :(');
-			}
-		}	
-	});
-}
+// function postPic(message){
+// 	let m = message.content.split(' ');
+// 	let sub = m[1]; 
+// 	let domains = ['i.redd.it', 'i.imgur.com', 'gfycat.com', 'v.redd.it'];
+// 	let posts = []; 
+// 	console.log(m);
+// 	request('https://www.reddit.com/r/'+sub+'/.json?limit=50', function(err, resp, body){
+// 		if(err){
+// 			console.log(err);
+// 			message.channel.send("There was an error...");
+// 		} else{
+// 			let post = JSON.parse(body);
+// 			if(post.data.children.length != 0){
+// 				for(let i = 0; i<50; i++){
+// 					console.log(i);
+// 					if(domains.indexOf(post.data.children[i].data.domain) > -1){
+// 						posts.push(post.data.children[i]);
+// 					}
+// 				}
+// 				let n = Math.floor(Math.random()*(posts.length)); 
+// 				console.log(posts.length, n);
+// 				if(posts.length > 0){
+// 				message.channel.send('`' + posts[n].data.title + '`' 
+// 															+ '\n' + posts[n].data.url);
+// 				} else{
+// 					message.channel.send('No images in /r/'+sub+' :(');
+// 				}
+// 			} else{
+// 				message.channel.send("I don't think that /r/" +sub+ " is a subreddit...");
+// 			}
+// 		}	
+// 	});
+// }
 
 
 // log bot in

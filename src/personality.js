@@ -10,7 +10,8 @@ const personality = {
 		'good bot' : 'Aww, thanks :)', 
 		'bad kenward bot' : 'hmph..', 
 		'bad bot' : 'hmph..', 
-		'hello' : 'Hey there!'
+		'hello' : 'Hey there!',
+		'thanks kenward bot': 'You are absolutely welcome.'
 	}
 }
 
