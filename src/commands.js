@@ -54,7 +54,7 @@ const commands = {
 						message.channel.send('No images in /r/'+sub+' :(');
 					}
 				} else{
-					message.channel.send("I don't think that /r/" +sub+ " is a subreddit...");
+					message.channel.send("/r/" + sub + " doesn't exist or has been deleted..");
 				}
 			}	
 		});
