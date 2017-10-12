@@ -37,7 +37,7 @@ client.on('message', m =>{
   			if(input[1]) m.channel.send('Hey there, ' + input[1]);
   			else m.reply(' how\'re ya doing?');
   			break;
-
+  			
 			case '!ask':
 				m.channel.send('What?');
 				break;

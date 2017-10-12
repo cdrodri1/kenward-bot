@@ -28,7 +28,7 @@ const commands = {
 		let sub = m[1]; 
 		let domains = ['i.redd.it', 'i.imgur.com', 'gfycat.com', 'v.redd.it'];
 		let posts = []; 
-		console.log(m);
+		console.log(message.author.tag, m);
 		request('https://www.reddit.com/r/'+sub+'/.json?limit=50', function(err, resp, body){
 			if(err){
 				console.log(err);
