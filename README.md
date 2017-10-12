@@ -5,7 +5,7 @@ Current functionality:
 - !hello [name]
 - !roll [num]
 - !chrissy 
-
+- !reddit <subreddit> 
 
 TODOs:
 - improve yt audio queue validations and yt search options
