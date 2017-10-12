@@ -35,15 +35,18 @@ const commands = {
 				message.channel.send("There was an error...");
 			} else{
 				let post = JSON.parse(body);
-				if(post.data.children.length != 0){
-					for(let i = 0; i<50; i++){
-						console.log(i);
+				let len = 0;
+				if(post.data){
+					len = post.data.children.length; 
+				}
+				if(len){
+					for(let i = 0; i<len; i++){
 						if(domains.indexOf(post.data.children[i].data.domain) > -1){
 							posts.push(post.data.children[i]);
 						}
 					}
 					let n = Math.floor(Math.random()*(posts.length)); 
-					console.log(posts.length, n);
+					console.log('Found:', posts.length, ' index:', n);
 					if(posts.length > 0){
 					message.channel.send('`' + posts[n].data.title + '`' 
 																+ '\n' + posts[n].data.url);
