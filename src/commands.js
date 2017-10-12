@@ -54,7 +54,7 @@ const commands = {
 						message.channel.send('No images in /r/'+sub+' :(');
 					}
 				} else{
-					message.channel.send("/r/" + sub + " doesn't exist or has been deleted..");
+					message.channel.send("Sorry, /r/" + sub + " doesn't exist or has been deleted..");
 				}
 			}	
 		});
