@@ -2,9 +2,29 @@
 
 const request = require('request');
 
+const cmdList = `
+**# # ===== kenward-bot ===== # #**
+
+**Commands**
+	!help						- displays list of commands
+	!roll [num]			- rolls a dice from 0-num (6 default)
+	!chrissy				- posts a picture of Chrissy Teigen
+	!reddit [sub]		- posts a picture from sub
+	!cleanup				- delete posts by me in the last 10 posts
+`;
+
 const commands = {
 
+	sendHelp : function(message){
+		message.channel.send({embed:{
+			color: 3447003,
+			description: cmdList
+		}});
+	},
+
 	diceRoll : function (message, num){
+		let m = message.content.split(' ');
+		console.log(message.author.tag, m);
 		if(Number(num)){
 			message.reply('Rolling... ' + (Math.floor(Math.random() * (Number(num) - 1)) + 1));
 		} else{
@@ -13,6 +33,8 @@ const commands = {
 	},
 
 	postChrissy : function (message){
+		let m = message.content.split(' ');
+		console.log(message.author.tag, m);
 		let posts = []; 
 		request('https://www.reddit.com/r/ChrissyTeigen/.json', function(err, resp, body){
 			let post = JSON.parse(body);
@@ -46,7 +68,7 @@ const commands = {
 						}
 					}
 					let n = Math.floor(Math.random()*(posts.length)); 
-					console.log('Found:', posts.length, ' index:', n);
+					console.log('-- Found:', posts.length, ' index:', n);
 					if(posts.length > 0){
 					message.channel.send('`' + posts[n].data.title + '`' 
 																+ '\n' + posts[n].data.url);
@@ -58,6 +80,27 @@ const commands = {
 				}
 			}	
 		});
+	},
+
+	cleanup : function(message){
+		let m = message.content.split(' ');
+		console.log(message.author.tag, m);
+		let count = 0; 
+		let ms = message.channel.fetchMessages({limit:10}).then(messages => {return messages});
+		ms
+		.then(
+			messages => {
+				messages.forEach(message => {
+					if(message.author.username === 'kenward-bot'){
+						message.delete(100);
+						count++;
+					}
+				});
+				console.log('-- ' + count + ' messages deleted');
+			}
+		);
+		// console.log(message.channel.messages.);
+		// console.log('hi');
 	}
 
 }

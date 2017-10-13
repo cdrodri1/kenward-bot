@@ -19,12 +19,25 @@ client.on('ready', () => {
 });
 
 client.on('message', m => {
-	if(m.author.username === 'kenward'){
-		// m.channel.send('hello master kenward', {tts:true});
-		if(personality.responses[m.content]){
-			m.channel.send(personality.responses[m.content.toLowerCase()]);
-		}
+	if(personality.responses[m.content]){
+		m.channel.send(personality.responses[m.content.toLowerCase()]);
 	}
+});
+
+client.on('guildMemberAdd', member => {
+  console.log(member);
+  console.log(member.guild);
+  let channel = member.guild.channels.find('name', 'member-log');
+  if(!channel) return;
+  channel.send('Welcome to the server, ${member}');
+});
+
+client.on('message', message => {
+   if (message.content == ("!clean")) {
+   		console.log('delete');
+      message.delete(1000); //Supposed to delete message
+      message.channel.send(message.content.slice(5, message.content.length));
+   }
 });
 
 // cmd listener
@@ -37,7 +50,7 @@ client.on('message', m =>{
   			if(input[1]) m.channel.send('Hey there, ' + input[1]);
   			else m.reply(' how\'re ya doing?');
   			break;
-  			
+
 			case '!ask':
 				m.channel.send('What?');
 				break;
@@ -52,6 +65,14 @@ client.on('message', m =>{
 
 			case '!reddit':
 				commands.postPic(m);
+				break;
+
+			case '!cleanup':
+			  commands.cleanup(m);
+			  break;
+
+			case '!help':
+				commands.sendHelp(m);
 				break;
 
 			case '!play':
@@ -101,60 +122,6 @@ function play(connection, m){
 		else connection.disconnect();
 	});
 }
-
-// function diceRoll(message, num){
-// 	if(Number(num)){
-// 		message.reply('Rolling... ' + (Math.floor(Math.random() * (Number(num) - 1)) + 1));
-// 	} else{
-// 		message.reply('Rolling... ' + (Math.floor(Math.random() * (6 - 1)) + 1));
-// 	}
-// }
-
-// function postChrissy(message){
-// 	let posts = []; 
-// 	request('https://www.reddit.com/r/ChrissyTeigen/.json', function(err, resp, body){
-// 		let post = JSON.parse(body);
-// 		for(let i = 0; i<20; i++){
-// 			posts.push(post.data.children[i].data.preview.images[0].source.url);
-// 		}
-// 		message.channel.send(posts[Math.floor(Math.random()*(20))]);
-// 	});
-// }
-
-// function postPic(message){
-// 	let m = message.content.split(' ');
-// 	let sub = m[1]; 
-// 	let domains = ['i.redd.it', 'i.imgur.com', 'gfycat.com', 'v.redd.it'];
-// 	let posts = []; 
-// 	console.log(m);
-// 	request('https://www.reddit.com/r/'+sub+'/.json?limit=50', function(err, resp, body){
-// 		if(err){
-// 			console.log(err);
-// 			message.channel.send("There was an error...");
-// 		} else{
-// 			let post = JSON.parse(body);
-// 			if(post.data.children.length != 0){
-// 				for(let i = 0; i<50; i++){
-// 					console.log(i);
-// 					if(domains.indexOf(post.data.children[i].data.domain) > -1){
-// 						posts.push(post.data.children[i]);
-// 					}
-// 				}
-// 				let n = Math.floor(Math.random()*(posts.length)); 
-// 				console.log(posts.length, n);
-// 				if(posts.length > 0){
-// 				message.channel.send('`' + posts[n].data.title + '`' 
-// 															+ '\n' + posts[n].data.url);
-// 				} else{
-// 					message.channel.send('No images in /r/'+sub+' :(');
-// 				}
-// 			} else{
-// 				message.channel.send("I don't think that /r/" +sub+ " is a subreddit...");
-// 			}
-// 		}	
-// 	});
-// }
-
 
 // log bot in
 client.login(token);
