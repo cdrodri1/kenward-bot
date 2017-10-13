@@ -1,6 +1,7 @@
 // commands.js
 
 const request = require('request');
+const extras = require('./extras.js');
 
 const cmdList = `
 **# # ===== kenward-bot ===== # #**
@@ -90,7 +91,7 @@ const commands = {
 			user = m[1];
 		} else{
 		}
-		console.log(message.author.tag, m);
+		console.log(extras.getTime(), message.author.tag, m);
 		let count = 0; 
 		let ms = message.channel.fetchMessages({limit:10}).then(messages => {return messages});
 		ms
