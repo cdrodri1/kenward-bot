@@ -10,7 +10,7 @@ const cmdList = `
 	!roll [num]			- rolls a dice from 0-num (6 default)
 	!chrissy				- posts a picture of Chrissy Teigen
 	!reddit [sub]		- posts a picture from sub
-	!cleanup				- delete posts by me in the last 10 posts
+	!cleanup [user] - delete posts by username in the last 10 posts
 `;
 
 const commands = {
@@ -84,6 +84,12 @@ const commands = {
 
 	cleanup : function(message){
 		let m = message.content.split(' ');
+		let user = 'kenward-bot';
+		// let num = 10; 
+		if(m[1]){
+			user = m[1];
+		} else{
+		}
 		console.log(message.author.tag, m);
 		let count = 0; 
 		let ms = message.channel.fetchMessages({limit:10}).then(messages => {return messages});
@@ -91,7 +97,7 @@ const commands = {
 		.then(
 			messages => {
 				messages.forEach(message => {
-					if(message.author.username === 'kenward-bot'){
+					if(message.author.username === user){
 						message.delete(100);
 						count++;
 					}
