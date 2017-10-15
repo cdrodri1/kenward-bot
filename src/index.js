@@ -56,10 +56,6 @@ client.on('message', m =>{
 				commands.diceRoll(m, input[1]);
 				break;
 
-			case '!chrissy':
-				commands.postChrissy(m);
-				break;
-
 			case '!reddit':
 				commands.postPic(m);
 				break;
@@ -73,15 +69,34 @@ client.on('message', m =>{
 				break;
 
 			case '!add':
-				let userKenny = {name: 'Kenward', points: 9000, items: []};
-				User.create(userKenny, function(err, newUser){
+				User.findOne({discordId: m.author.id}, 'discordId', function(err,user){
 					if(err){
 						console.log(err);
 					} else{
-						console.log('Added new user:');
-						console.log(newUser);
+						if(user){		// if user already exists, don't add to db 
+							m.reply(' you are already in the database!');
+						} else{			// add to DB 
+							addUser(m);
+						}
 					}
 				});
+				break;
+
+			case '!me':
+				updateUser(m, printUser);
+				break;
+
+			case '!gift':
+				// giftPoints(m);
+				updateUser(m, updatePoints);
+				break;
+
+			case '!addItem': 
+				addItem(m);
+				break;
+
+			case '!giftItem':
+				updateUser(m, giftItem);
 				break;
 
 			default:
@@ -89,6 +104,88 @@ client.on('message', m =>{
   	}
   }
 });
+
+// MONGODB FUNCTIONS
+function addUser(m){
+	let user = {name: m.author.username, discordId: m.author.id, points: 0, items: []};
+	User.create(user, function(err, newUser){
+		if(err){
+			console.log(err);
+		} else{
+			console.log('Added new user:');
+			console.log(newUser);	
+			m.reply("You've been added to the db!");
+		}
+	});
+}
+
+function printUser(m, u){
+	m.reply('\n---------------' + '\npoints: ' + u.points + '\nitems: ' + u.items);
+}
+
+function updatePoints(m, u){
+	let pts = u.points + 100;
+	u.set({points:pts});
+	u.save((err,updatedUser) => {
+		if(err){
+			console.log(err);
+		} else{
+			m.reply(' you now have ' + updatedUser.points + ' points!');
+		}
+	});
+}
+
+function updateUser(m, action){
+	User.findOne({discordId:m.author.id}, function(err, user){
+		if(err){
+			console.log(err);
+		} else{
+			if(user){			// user exists
+				action(m, user);
+			}else{				// user doesn't exist
+				m.reply(" you don't exist in the database yet!");
+			} 						
+		}
+	});
+}
+
+function addItem(m){
+	let args = m.content.split('|');
+	console.log(args); 
+	let name = args[1]; 
+	let description = args[2]; 
+	let value = args[3]; 
+	Item.create({name: name, description: description, value: value}, function(err,newItem){
+		if(err){
+			console.log(err);
+		} else{
+			console.log('New item added!');
+			console.log(newItem);
+		}
+	});
+}
+
+function giftItem(m, user){
+	// get item
+	Item.findOne({name:"chad's hammer"}, function(err, item){
+		if(err){
+			console.log(err);
+		} else{		// push item into user
+			console.log('added item');
+			console.log(item);
+
+			user.items.push(item);
+			user.save(function(err, updatedUser){
+				if(err){
+					console.log(err);
+				} else{
+					console.log(updatedUser);
+				}
+			})
+
+		}
+	});
+}
 
 // log bot in
 client.login(token);
