@@ -3,27 +3,26 @@ const client = new Discord.Client();
 
 const request = require('request');
 const YTDL = require('ytdl-core');
+const mongoose = require('mongoose');
+
 const personality = require('./personality.js');
 const commands = require('./commands.js');
 
+// MONGODB models
+const User = require('./models/users.js');
+const Item = require('./models/items.js');
+
+mongoose.connect('mongodb://localhost/kenward-bot');
+
 
 const token = 'MzY1MjE4Mzg5MTcxMzcyMDQ1.DLbHsA.7aTq6ntvepp4r1LQlEsrZXUQIrY';
-
-var servers = {};
-const people = ['elias', 'neil', 'chad', 'daniel', 'kenward'];
-var counter = 0; 
 
 // emit 'ready' 
 client.on('ready', () => {
   console.log(`Logged in as ${client.user.tag}!`);
 });
 
-client.on('message', m => {
-	if(personality.responses[m.content]){
-		m.channel.send(personality.responses[m.content.toLowerCase()]);
-	}
-});
-
+// new member listener
 client.on('guildMemberAdd', member => {
   console.log(member);
   console.log(member.guild);
@@ -32,16 +31,14 @@ client.on('guildMemberAdd', member => {
   channel.send('Welcome to the server, ${member}');
 });
 
-client.on('message', message => {
-   if (message.content == ("!clean")) {
-   		console.log('delete');
-      message.delete(1000); //Supposed to delete message
-      message.channel.send(message.content.slice(5, message.content.length));
-   }
-});
-
 // cmd listener
 client.on('message', m =>{
+	// personality responses
+	if(personality.responses[m.content]){
+		m.channel.send(personality.responses[m.content.toLowerCase()]);
+	}
+
+	// cmd responses
 	const input = m.content.split(' '); 
   if(input){	
   	switch(input[0]){
@@ -75,53 +72,23 @@ client.on('message', m =>{
 				commands.sendHelp(m);
 				break;
 
-			case '!play':
-				m.channel.send('woof woof!');
-				if(!input[1]){
-					m.channel.send('Please send a link');
-					return;
-				}
-				if(!m.member.voiceChannel){
-					m.channel.send('Please join a voice channel');
-				}
-				if(!servers[m.guild.id]) servers[m.guild.id] = {
-					queue : []
-				};
-				var server = servers[m.guild.id];
-				server.queue.push(input[1]);
-				console.log('queue: ' + server.queue);
-				if(!m.guild.voiceConnection) m.member.voiceChannel.join().then(function(connection){
-					play(connection, m);
+			case '!add':
+				let userKenny = {name: 'Kenward', points: 9000, items: []};
+				User.create(userKenny, function(err, newUser){
+					if(err){
+						console.log(err);
+					} else{
+						console.log('Added new user:');
+						console.log(newUser);
+					}
 				});
 				break;
-
-			case '!skip':
-				var server = servers[m.guild.id];
-				if(server.dispatcher) server.dispatcher.end();
-				break;
-
-			case 'stop': 
-				var server = servers[m.guild.id];
-				if(m.guild.voiceConnection) m.guild.voiceConnection.disconnect();
-				break; 
 
 			default:
 				break;
   	}
   }
 });
-
-
-function play(connection, m){
-	var server = servers[m.guild.id];
-	server.dispatcher = connection.playStream(YTDL(server.queue[0], {filter:'audioonly'}));
-	server.dispatcher.setVolume(0.5);
-	server.queue.shift();
-	server.dispatcher.on('end', function(){
-		if(server.queue[0]) play(connection, m);
-		else connection.disconnect();
-	});
-}
 
 // log bot in
 client.login(token);
