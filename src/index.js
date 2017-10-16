@@ -120,7 +120,11 @@ function addUser(m){
 }
 
 function printUser(m, u){
-	m.reply('\n---------------' + '\npoints: ' + u.points + '\nitems: ' + u.items);
+	printItems(m, u, u.items);
+}
+
+function printUserFinal(m, u, s){
+	m.reply('\n---------------' + '\npoints: ' + u.points + '\nitems: ' + s);
 }
 
 function updatePoints(m, u){
@@ -184,6 +188,26 @@ function giftItem(m, user){
 			})
 
 		}
+	});
+}
+
+function printItems(m, u, items){
+	let s = '';
+	var counter = 0;
+	items.forEach(function(itemId){
+		Item.findOne({_id:itemId}, function(err, item){
+			if(err){
+				console.log(err);
+			} else{
+				s += item.name + ' ';
+				console.log(s);
+				console.log(item.name);
+				counter++;
+				if(counter == items.length){
+					printUserFinal(m, u, s); 
+				}
+			}
+		});
 	});
 }
 
