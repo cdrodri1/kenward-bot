@@ -7,6 +7,7 @@ const mongoose = require('mongoose');
 
 const personality = require('./personality.js');
 const commands = require('./commands.js');
+const points = require('./points.js');
 
 // MONGODB models
 const User = require('./models/users.js');
@@ -83,12 +84,12 @@ client.on('message', m =>{
 				break;
 
 			case '!me':
-				updateUser(m, printUser);
+				passUser(m, printUser);
 				break;
 
 			case '!gift':
 				// giftPoints(m);
-				updateUser(m, updatePoints);
+				passUser(m, updatePoints);
 				break;
 
 			case '!addItem': 
@@ -96,9 +97,13 @@ client.on('message', m =>{
 				break;
 
 			case '!giftItem':
-				updateUser(m, giftItem);
+				passUser(m, giftItem);
 				break;
 
+			case '!gamble':
+				passUser(m, points.gamble); 
+				break;
+				
 			default:
 				break;
   	}
@@ -106,40 +111,8 @@ client.on('message', m =>{
 });
 
 // MONGODB FUNCTIONS
-function addUser(m){
-	let user = {name: m.author.username, discordId: m.author.id, points: 0, items: []};
-	User.create(user, function(err, newUser){
-		if(err){
-			console.log(err);
-		} else{
-			console.log('Added new user:');
-			console.log(newUser);	
-			m.reply("You've been added to the db!");
-		}
-	});
-}
 
-function printUser(m, u){
-	printItems(m, u, u.items);
-}
-
-function printUserFinal(m, u, s){
-	m.reply('\n---------------' + '\npoints: ' + u.points + '\nitems: ' + s);
-}
-
-function updatePoints(m, u){
-	let pts = u.points + 100;
-	u.set({points:pts});
-	u.save((err,updatedUser) => {
-		if(err){
-			console.log(err);
-		} else{
-			m.reply(' you now have ' + updatedUser.points + ' points!');
-		}
-	});
-}
-
-function updateUser(m, action){
+function passUser(m, action){
 	User.findOne({discordId:m.author.id}, function(err, user){
 		if(err){
 			console.log(err);
@@ -153,8 +126,21 @@ function updateUser(m, action){
 	});
 }
 
+function addUser(m){
+	let user = {name: m.author.username, discordId: m.author.id, points: 0, items: []};
+	User.create(user, function(err, newUser){
+		if(err){
+			console.log(err);
+		} else{
+			console.log('Added new user:');
+			console.log(newUser);	
+			m.reply("You've been added to the db!");
+		}
+	});
+}
+
 function addItem(m){
-	let args = m.content.split('|');
+	let args = m.content.split(' | ');
 	console.log(args); 
 	let name = args[1]; 
 	let description = args[2]; 
@@ -191,23 +177,72 @@ function giftItem(m, user){
 	});
 }
 
-function printItems(m, u, items){
-	let s = '';
-	var counter = 0;
+function printUser(m, u){
+	// let resp = '';
+	// resp += '\n----------' + '\npoints: ' + u.points + '\nitems: ' + itemsToString(u.items); 
+	// m.reply(resp);
+	userToString(m, u, u.items);
+}
+
+function userToString(m, u, items){
+	let resp = '\n---------' + '\npoints: ' + u.points + '\nitems: '; 
+	let counter = 0; 
+	if(items.length === 0){
+		m.reply(resp);
+	}
 	items.forEach(function(itemId){
 		Item.findOne({_id:itemId}, function(err, item){
 			if(err){
 				console.log(err);
 			} else{
-				s += item.name + ' ';
-				console.log(s);
-				console.log(item.name);
+				resp += item.name + ', ';
 				counter++;
-				if(counter == items.length){
-					printUserFinal(m, u, s); 
+				if(counter === items.length){
+					m.reply(resp);
 				}
 			}
 		});
+	});
+}
+
+
+function itemsToString(items){
+	console.log(items);
+	let s = '';
+	let counter = 0; 
+	let itemsArray = [];
+	if(items.length === 0){
+		return ''; 
+	} 
+	items.forEach(function(itemId){
+		Item.findOne({_id:itemId}, function(err, item){
+			if(err){
+				console.log(err);
+			} else{
+				itemsArray.push(item.name);
+				s = s + item.name + ', ';
+				// console.log(s);
+				console.log(itemsArray);
+			}
+			if(counter === items.length){
+				console.log(itemsArray);
+				return s; 
+			}
+		});
+	});
+	// console.log(s);
+	// return s; 
+}
+
+function updatePoints(m, u){
+	let pts = u.points + 100;
+	u.set({points:pts});
+	u.save((err,updatedUser) => {
+		if(err){
+			console.log(err);
+		} else{
+			m.reply(' you now have ' + updatedUser.points + ' points!');
+		}
 	});
 }
 
