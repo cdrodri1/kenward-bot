@@ -27,7 +27,7 @@ client.on('ready', () => {
 client.on('guildMemberAdd', member => {
   console.log(member);
   console.log(member.guild);
-  let channel = member.guild.channels.find('name', 'member-log');
+  let channel = member.guild.channels.find('name', 'general');
   if(!channel) return;
   channel.send('Welcome to the server, ${member}');
 });
@@ -44,32 +44,32 @@ client.on('message', m =>{
   if(input){	
   	switch(input[0]){
 
-  		case '!hello': 
+  		case '!hello': 																							// !hello
   			if(input[1]) m.channel.send('Hey there, ' + input[1]);
   			else m.reply(' how\'re ya doing?');
   			break;
 
-			case '!ask':
+			case '!ask':  																							// !ask
 				m.channel.send('What?');
 				break;
 
-			case '!roll':
+			case '!roll': 																							// !roll
 				commands.diceRoll(m, input[1]);
 				break;
 
-			case '!reddit':
+			case '!reddit': 																						// !reddit
 				commands.postPic(m);
 				break;
 
-			case '!cleanup':
+			case '!cleanup': 																						// !cleanup
 			  commands.cleanup(m);
 			  break;
 
-			case '!help':
+			case '!help': 																							// !help
 				commands.sendHelp(m);
 				break;
 
-			case '!add':
+			case '!add': 																								// !add
 				User.findOne({discordId: m.author.id}, 'discordId', function(err,user){
 					if(err){
 						console.log(err);
@@ -83,25 +83,29 @@ client.on('message', m =>{
 				});
 				break;
 
-			case '!me':
+			case '!me': 																								// !me
 				passUser(m, printUser);
 				break;
 
-			case '!gift':
+			case '!gift': 																							// !gift
 				// giftPoints(m);
 				passUser(m, updatePoints);
 				break;
 
-			case '!addItem': 
+			case '!addItem':  																					// !addItem
 				addItem(m);
 				break;
 
-			case '!giftItem':
+			case '!giftItem': 																					// !giftItem
 				passUser(m, giftItem);
 				break;
 
-			case '!gamble':
+			case '!gamble': 																						// !gamble
 				passUser(m, points.gamble); 
+				break;
+
+			case '!buy': 																								// !buy
+				points.buyMenu(m);
 				break;
 				
 			default:
@@ -177,10 +181,19 @@ function giftItem(m, user){
 	});
 }
 
+function passItems(m, u, action){
+	items.forEach(function(itemId){
+		Item.findOne({_id:itemId}, function(err, item){
+			if(err){
+				console.log(err);
+			} else{
+				action(m, u, item);
+			}
+		});
+	})
+}
+
 function printUser(m, u){
-	// let resp = '';
-	// resp += '\n----------' + '\npoints: ' + u.points + '\nitems: ' + itemsToString(u.items); 
-	// m.reply(resp);
 	userToString(m, u, u.items);
 }
 
@@ -203,35 +216,6 @@ function userToString(m, u, items){
 			}
 		});
 	});
-}
-
-
-function itemsToString(items){
-	console.log(items);
-	let s = '';
-	let counter = 0; 
-	let itemsArray = [];
-	if(items.length === 0){
-		return ''; 
-	} 
-	items.forEach(function(itemId){
-		Item.findOne({_id:itemId}, function(err, item){
-			if(err){
-				console.log(err);
-			} else{
-				itemsArray.push(item.name);
-				s = s + item.name + ', ';
-				// console.log(s);
-				console.log(itemsArray);
-			}
-			if(counter === items.length){
-				console.log(itemsArray);
-				return s; 
-			}
-		});
-	});
-	// console.log(s);
-	// return s; 
 }
 
 function updatePoints(m, u){

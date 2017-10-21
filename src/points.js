@@ -1,3 +1,5 @@
+const Item = require('./models/items.js');
+
 function gamble(m, u){
 	let args = m.content.split(' ');
 	let num = parseInt(args[1], 10); 
@@ -17,8 +19,8 @@ function gamble(m, u){
 		resp += ' you rolled: ' + rand + '\nYou win!';
 		newpts = u.points + num; 
 	} else if(rand === 100){
-		resp += ' WOW you rolled: ' + rand + '\nYou win 3x your bet';
-		newpts = u.points + 2*num; 
+		resp += ' WOW you rolled: ' + rand + '\nYou win 5x your bet';
+		newpts = u.points + 5*num; 
 	} else{
 		resp += ' you rolled: ' + rand + '\nToo low!';
 		newpts = u.points - num; 
@@ -32,8 +34,28 @@ function gamble(m, u){
 			m.reply(resp + ' You now have **' + updatedUser.points + '** points!');
 		}
 	});
+}
 
+function buyMenu(m){
+	let itemList = '===============\n'; 
+	Item.find({}, function(err, items){
+		if(err){
+			console.log(err);
+		} else{	
+			items.forEach(function(item){
+				itemList += '**' + item.name + '** - (' + item.value + 'pts)\n\t' + item.description + '\n';
+			});
+			m.channel.send({embed:{
+				color: 3447003,
+				description: itemList
+			}});
+		}
+	}); 
 
+	// items.forEach(function(itemId){
+
+	// });
 }
 
 module.exports.gamble = gamble; 
+module.exports.buyMenu = buyMenu;
