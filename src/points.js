@@ -1,8 +1,5 @@
 const Item = require('./models/items.js');
-<<<<<<< HEAD
 const User = require('./models/users.js');
-=======
->>>>>>> 78b131f7397d9d296cdd65f0ccbc1659d5738399
 
 function gamble(m, u){
 	let args = m.content.split(' ');
@@ -10,11 +7,7 @@ function gamble(m, u){
 	let newpts = 0; 
 	let resp = ''; 
 
-<<<<<<< HEAD
 	if(!num | num < 0){
-=======
-	if(!num){
->>>>>>> 78b131f7397d9d296cdd65f0ccbc1659d5738399
 		m.reply(' please try again and enter a point value to gamble.');
 		return;
 	} 
