@@ -7,6 +7,7 @@ const mongoose = require('mongoose');
 
 const personality = require('./personality.js');
 const commands = require('./commands.js');
+const points = require('./points.js');
 
 // MONGODB models
 const User = require('./models/users.js');
@@ -26,9 +27,9 @@ client.on('ready', () => {
 client.on('guildMemberAdd', member => {
   console.log(member);
   console.log(member.guild);
-  let channel = member.guild.channels.find('name', 'member-log');
+  let channel = member.guild.channels.find('name', 'general');
   if(!channel) return;
-  channel.send('Welcome to the server, ${member}');
+  channel.send(`Welcome to the server, ${member}`);
 });
 
 // cmd listener
@@ -43,32 +44,31 @@ client.on('message', m =>{
   if(input){	
   	switch(input[0]){
 
-  		case '!hello': 
-  			if(input[1]) m.channel.send('Hey there, ' + input[1]);
-  			else m.reply(' how\'re ya doing?');
+  		case 'hello': 																							// !hello
+  			m.channel.send('Hey there, <@'+ m.author.id + '>. How\'re ya doing?');
   			break;
 
-			case '!ask':
+			case '!ask':  																							// !ask
 				m.channel.send('What?');
 				break;
 
-			case '!roll':
+			case '!roll': 																							// !roll
 				commands.diceRoll(m, input[1]);
 				break;
 
-			case '!reddit':
+			case '!reddit': 																						// !reddit
 				commands.postPic(m);
 				break;
 
-			case '!cleanup':
+			case '!cleanup': 																						// !cleanup
 			  commands.cleanup(m);
 			  break;
 
-			case '!help':
+			case '!help': 																							// !help
 				commands.sendHelp(m);
 				break;
 
-			case '!add':
+			case '!add': 																								// !add
 				User.findOne({discordId: m.author.id}, 'discordId', function(err,user){
 					if(err){
 						console.log(err);
@@ -82,23 +82,35 @@ client.on('message', m =>{
 				});
 				break;
 
-			case '!me':
-				updateUser(m, printUser);
+			case '!me': 																								// !me
+				passUser(m, printUser);
 				break;
 
-			case '!gift':
+			case '!gift': 																							// !gift
 				// giftPoints(m);
-				updateUser(m, updatePoints);
+				// passUser(m, updatePoints);
 				break;
 
-			case '!addItem': 
+			case '!addItem':  																					// !addItem
 				addItem(m);
 				break;
 
-			case '!giftItem':
-				updateUser(m, giftItem);
+			case '!giftItem': 																					// !giftItem
+				passUser(m, giftItem);
 				break;
 
+			case '!gamble': 																						// !gamble
+				passUser(m, points.gamble); 
+				break;
+
+			case '!buy': 																								// !buy
+				points.buyMenu(m);
+				break;
+
+			case '!find':
+				m.channel.send('Found you! <@' + m.author.id + '>');
+				break;
+				
 			default:
 				break;
   	}
@@ -106,40 +118,8 @@ client.on('message', m =>{
 });
 
 // MONGODB FUNCTIONS
-function addUser(m){
-	let user = {name: m.author.username, discordId: m.author.id, points: 0, items: []};
-	User.create(user, function(err, newUser){
-		if(err){
-			console.log(err);
-		} else{
-			console.log('Added new user:');
-			console.log(newUser);	
-			m.reply("You've been added to the db!");
-		}
-	});
-}
 
-function printUser(m, u){
-	printItems(m, u, u.items);
-}
-
-function printUserFinal(m, u, s){
-	m.reply('\n---------------' + '\npoints: ' + u.points + '\nitems: ' + s);
-}
-
-function updatePoints(m, u){
-	let pts = u.points + 100;
-	u.set({points:pts});
-	u.save((err,updatedUser) => {
-		if(err){
-			console.log(err);
-		} else{
-			m.reply(' you now have ' + updatedUser.points + ' points!');
-		}
-	});
-}
-
-function updateUser(m, action){
+function passUser(m, action){
 	User.findOne({discordId:m.author.id}, function(err, user){
 		if(err){
 			console.log(err);
@@ -153,8 +133,21 @@ function updateUser(m, action){
 	});
 }
 
+function addUser(m){
+	let user = {name: m.author.username, discordId: m.author.id, points: 5000, items: []};
+	User.create(user, function(err, newUser){
+		if(err){
+			console.log(err);
+		} else{
+			console.log('Added new user:');
+			console.log(newUser);	
+			m.reply("You've been added to the db!");
+		}
+	});
+}
+
 function addItem(m){
-	let args = m.content.split('|');
+	let args = m.content.split(' | ');
 	console.log(args); 
 	let name = args[1]; 
 	let description = args[2]; 
@@ -191,23 +184,52 @@ function giftItem(m, user){
 	});
 }
 
-function printItems(m, u, items){
-	let s = '';
-	var counter = 0;
+function passItems(m, u, action){
 	items.forEach(function(itemId){
 		Item.findOne({_id:itemId}, function(err, item){
 			if(err){
 				console.log(err);
 			} else{
-				s += item.name + ' ';
-				console.log(s);
-				console.log(item.name);
+				action(m, u, item);
+			}
+		});
+	})
+}
+
+function printUser(m, u){
+	userToString(m, u, u.items);
+}
+
+function userToString(m, u, items){
+	let resp = '\n---------' + '\npoints: ' + u.points + '\nitems: '; 
+	let counter = 0; 
+	if(items.length === 0){
+		m.reply(resp);
+	}
+	items.forEach(function(itemId){
+		Item.findOne({_id:itemId}, function(err, item){
+			if(err){
+				console.log(err);
+			} else{
+				resp += item.name + ', ';
 				counter++;
-				if(counter == items.length){
-					printUserFinal(m, u, s); 
+				if(counter === items.length){
+					m.reply(resp);
 				}
 			}
 		});
+	});
+}
+
+function updatePoints(m, u){
+	let pts = u.points + 100;
+	u.set({points:pts});
+	u.save((err,updatedUser) => {
+		if(err){
+			console.log(err);
+		} else{
+			m.reply(' you now have ' + updatedUser.points + ' points!');
+		}
 	});
 }
 
