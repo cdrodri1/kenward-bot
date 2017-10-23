@@ -130,7 +130,8 @@ The next step now that you are a little familiar with node.js, would be to insta
 ```const Discord = require('discord.js');
 const request = require('request');
 const YTDL = require('ytdl-core');
-const mongoose = require('mongoose');```
+const mongoose = require('mongoose');
+```
 
 These lines are importing features and code that other people wrote that are designed to make your life easier. Npm makes this very easy to do. You will have to navigate to the same directory where you cloned the repository, except now instead of using the Windows explorer, Mac Finder, you must do so using the cmd prompt / terminal. 
 
