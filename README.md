@@ -12,8 +12,28 @@ To get your environment setup, you will need a few things:
 * Familiarity with cmd prompt (windows) or Terminal (OSX & linux)
 * Familiarity with Git
 
-### Installing Git
-_to be updated_
+### Installing Git and Cloning the Repository
+Git is our version control software. It makes it easy for us to collaborate together on code and gives us the option to rollback in case we make a mistake. 
+
+You can download git from [here](https://git-scm.com/downloads). I primarily use and recommend the Git Bash application that should come included in that download, but there are other git tools out there as well. 
+
+**Windows**
+
+Once installed, go ahead and hit the windows key and type in 'git bash' to open a terminal-like interface. We are going to clone this repository, in other words, copy this repository to our local computer. To do so, type the following command into the git bash prompt: 
+
+```git clone https://github.com/hkennyv/kenward-bot.git```
+
+Once it is done, there should be a local copy on your computer! You can verify this by navigating to your C:\Users\YourUser\ and finding a folder called 'kenward-bot'.
+
+**Mac OS**
+
+Once installed, go ahead open up a terminal. In Mac OS, you can run git right from the terminal and do not need to use the git bash shell. To clone the repo, simply enter the following command into your terminal: 
+
+```git clone https://github.com/hkennyv/kenward-bot.git```
+
+Once it's done, there should be a local copy that you can navigate to in Finder at /Users/YourUser/
+
+_to be updated more_
 
 ### Installing Node.js
 You can start by downloading and installing node.js and npm from [here](https://nodejs.org/en/download/) for your operating system. Node.js is an extermely powerful javascript runtime that allows you to run serverside code! Npm stands for 'Node Package Manager' and makes it extremely easy to manage dependencies in our project. If you're not familiar with command prompt on windows / terminal on osx & linux, don't worry, you will pick it up extremely fast. 
@@ -21,23 +41,27 @@ You can start by downloading and installing node.js and npm from [here](https://
 **Windows**: Open a command prompt by pressing the Windows key and typing in 'cmd' and hitting enter. This will open up a command prompt. You can verify that you successfully installed Node.js and check the version by entering the following into the cmd prompt:
 
 ```node -v``` 
+
 Similarly, you can verify that npm was successfully installed by entering the following cmd into the terminal:
 
 ```npm -v```
+
 It is _okay_ if the versions are slightly different. 
 
 **Mac OS**: Open a terminal by pressing cmd + space and typing in 'terminal' and hitting enter. This opens a terminal window. You can verify that you've successfully installed Node.js by etnering the following command into the terminal:
 
 ```node -v```
+
 Similarly, you can verify that npm was successfully installed by entering:
 
 ```npm -v```  
+
 It is _okay_ if the versions are slightly different. 
 
 Congratulations, you've installed node.js and npm!
 
 ### Installing MongoDB
-Now this part is _optional__. If you choose to not install the mongoDB, there will be lines that you must comment out in the code if you wish to run it and test. If you wish to install MongoDB and host a database off of your machine, please continue reading.
+Now this part is _optional_. If you choose to not install the mongoDB, there will be lines that you must comment out in the code if you wish to run it and test. If you wish to install MongoDB and host a database off of your machine, please continue reading.
 
 Download and install MongoDB from [here](https://www.mongodb.com/download-center?jmp=nav#community). Once finished installing, you will need to open up a cmd prompt (Windows) or Terminal(Mac/Linux). 
 
