@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # KENWARD-BOT
 ## Author(s): K.Huynh, J.Wang, D.Miranda
 

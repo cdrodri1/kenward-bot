@@ -88,7 +88,7 @@ client.on('message', m =>{
 
 			case '!gift': 																							// !gift
 				// giftPoints(m);
-				// passUser(m, updatePoints);
+				passUser(m, updatePoints);
 				break;
 
 			case '!addItem':  																					// !addItem
