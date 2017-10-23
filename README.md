@@ -127,7 +127,8 @@ Feel free to take a look for as long as you like, once you are ready to move for
 ### Using npm to Install dependencies
 The next step now that you are a little familiar with node.js, would be to install all the dependencies you need for the bot to run. If you noticed at the top of the index.js file, there were several lines of code that looked something like: 
 
-```const Discord = require('discord.js');
+```
+const Discord = require('discord.js');
 const request = require('request');
 const YTDL = require('ytdl-core');
 const mongoose = require('mongoose');
