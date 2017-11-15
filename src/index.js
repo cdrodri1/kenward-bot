@@ -4,6 +4,8 @@ const client = new Discord.Client();
 const request = require('request');
 const YTDL = require('ytdl-core');
 const mongoose = require('mongoose');
+require('dotenv').config()
+
 
 const personality = require('./personality.js');
 const commands = require('./commands.js');
