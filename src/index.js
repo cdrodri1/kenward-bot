@@ -16,7 +16,7 @@ const Item = require('./models/items.js');
 mongoose.connect('mongodb://localhost/kenward-bot');
 
 
-const token = 'MzY1MjE4Mzg5MTcxMzcyMDQ1.DLbHsA.7aTq6ntvepp4r1LQlEsrZXUQIrY';
+const token = process.env.TOKEN;
 
 // emit 'ready' 
 client.on('ready', () => {
