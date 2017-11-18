@@ -4,12 +4,12 @@ const client = new Discord.Client();
 const request = require('request');
 const YTDL = require('ytdl-core');
 const mongoose = require('mongoose');
-require('dotenv').config()
-
+require('dotenv').config();
 
 const personality = require('./personality.js');
 const commands = require('./commands.js');
 const points = require('./points.js');
+const extras = require('./extras.js');
 
 // MONGODB models
 const User = require('./models/users.js');
@@ -17,8 +17,11 @@ const Item = require('./models/items.js');
 
 mongoose.connect('mongodb://localhost/kenward-bot');
 
-
 const token = process.env.TOKEN;
+
+// Globals
+let serverList = []; 
+let lottoNumber = 0; 
 
 // emit 'ready' 
 client.on('ready', () => {
@@ -45,10 +48,6 @@ client.on('message', m =>{
 	const input = m.content.split(' '); 
   if(input){	
   	switch(input[0]){
-
-  		case 'hello': 																							// !hello
-  			m.channel.send('Hey there, <@'+ m.author.id + '>. How\'re ya doing?');
-  			break;
 
 			case '!ask':  																							// !ask
 				m.channel.send('What?');
@@ -112,12 +111,37 @@ client.on('message', m =>{
 			case '!find':
 				m.channel.send('Found you! <@' + m.author.id + '>');
 				break;
+
+			case '!start':
+				serverList.push(m.channel);
+				console.log(serverList);
+				dailyReset(m.channel);
+				break;
+
+			case '!guess': 
+				if(parseInt(input[1],10) == lottoNumber){
+					m.reply(' congratulations! You won the lottery. The winning number was: ' + lottoNumber);
+					lottoNumber = (Math.floor(Math.random() * (101-1)) +1);
+					console.log(lottoNumber);
+					m.channel.send('Generating new lottery number...');
+				}else{
+					m.channel.send('Sorry, try again!');
+				}
 				
 			default:
 				break;
   	}
   }
 });
+
+// Daily Reset
+function dailyReset(ch){
+	ch.send('Daily reset! Try to guess the lottery number.');
+	lottoNumber = (Math.floor(Math.random() * (101 - 1)) + 1);
+	console.log(extras.getTime(), lottoNumber);
+	// console.log('10s has passed!');
+	setTimeout(dailyReset, 10800000, ch);		
+}
 
 // MONGODB FUNCTIONS
 
