@@ -12,7 +12,8 @@ const personality = {
 		'bad bot' : 'hmph..', 
 		'hello' : 'Hey there!',
 		'thanks kenward bot': 'You are absolutely welcome.',
-		'hey' : "( ͡° ͜ʖ ͡°)"
+		'hey' : "( ͡° ͜ʖ ͡°)",
+		'Spiderman' : "Contacting Chris!"
 	}
 }
 
